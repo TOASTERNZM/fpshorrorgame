@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Dark House | Flashlight Horror</title>
+    <title>Forsaken Manor | 3D Horror Game</title>
     <style>
         * {
             margin: 0;
@@ -38,94 +38,62 @@
             z-index: 10;
         }
         
-        #health {
+        #hud {
             position: absolute;
             top: 20px;
             left: 20px;
-            font-size: 24px;
-            color: #f00;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 1px solid #600;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
-        #keys {
-            position: absolute;
-            top: 70px;
-            left: 20px;
-            font-size: 24px;
-            color: #ff0;
-            background: rgba(0,0,0,0.7);
+        .hud-item {
+            background: rgba(0, 0, 0, 0.7);
             padding: 10px 20px;
             border-radius: 5px;
-            border: 1px solid #660;
+            border: 1px solid #444;
+            min-width: 200px;
         }
         
-        #sanctuary {
-            position: absolute;
-            top: 120px;
-            left: 20px;
+        .hud-value {
             font-size: 24px;
-            color: #0af;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 1px solid #006;
+            font-weight: bold;
+            margin-top: 5px;
         }
+        
+        #health .hud-value { color: #f00; }
+        #keys .hud-value { color: #ff0; }
+        #sanctuary .hud-value { color: #0af; }
         
         #warning {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 48px;
+            font-size: 36px;
             color: #f00;
             text-shadow: 0 0 20px #f00;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.9);
             padding: 20px 40px;
             border-radius: 10px;
             border: 3px solid #f00;
             display: none;
+            z-index: 20;
         }
         
         #objective {
             position: absolute;
             bottom: 20px;
-            left: 20px;
-            font-size: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 2px solid #0a0;
             color: #0f0;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 1px solid #060;
-        }
-        
-        #stamina {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 200px;
-            height: 20px;
-            background: rgba(0,0,0,0.7);
-            border: 1px solid #0af;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        
-        #stamina-fill {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, #0af, #0ff);
-            transition: width 0.3s;
-        }
-        
-        #stamina-text {
-            position: absolute;
-            bottom: 45px;
-            right: 20px;
-            color: #0af;
-            font-size: 16px;
+            font-size: 18px;
+            max-width: 600px;
+            text-align: center;
         }
         
         #start-screen {
@@ -134,12 +102,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.9), rgba(20,0,0,0.9));
+            background: linear-gradient(rgba(0, 0, 0, 0.95), rgba(20, 0, 0, 0.95));
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 30;
         }
         
         #title {
@@ -147,13 +115,16 @@
             color: #b00;
             margin-bottom: 20px;
             text-shadow: 0 0 20px #f00;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
         }
         
         #subtitle {
             font-size: 24px;
             color: #aaa;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
+            max-width: 800px;
+            text-align: center;
+            line-height: 1.5;
         }
         
         #start-btn {
@@ -172,16 +143,18 @@
         #start-btn:hover {
             background: #a00;
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255,0,0,0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
         }
         
         #controls {
             position: absolute;
             bottom: 40px;
-            background: rgba(0,0,0,0.7);
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
             border-radius: 10px;
             border: 1px solid #444;
+            max-width: 500px;
+            line-height: 1.8;
         }
         
         .key {
@@ -194,18 +167,18 @@
             font-family: monospace;
         }
         
-        #game-over {
+        #game-over, #win-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 30;
+            z-index: 40;
         }
         
         #game-over h1 {
@@ -215,38 +188,6 @@
             text-shadow: 0 0 20px #f00;
         }
         
-        #restart-btn {
-            background: #800;
-            color: white;
-            border: none;
-            padding: 20px 50px;
-            font-size: 28px;
-            cursor: pointer;
-            border-radius: 10px;
-            margin-top: 30px;
-            border: 2px solid #a00;
-            transition: all 0.3s;
-        }
-        
-        #restart-btn:hover {
-            background: #a00;
-            transform: scale(1.05);
-        }
-        
-        #win-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,20,0,0.95);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 30;
-        }
-        
         #win-screen h1 {
             font-size: 72px;
             color: #0f0;
@@ -254,21 +195,21 @@
             text-shadow: 0 0 20px #0f0;
         }
         
-        #continue-btn {
-            background: #080;
+        #restart-btn, #continue-btn {
+            background: #600;
             color: white;
             border: none;
             padding: 20px 50px;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
             border-radius: 10px;
-            margin-top: 30px;
-            border: 2px solid #0a0;
+            margin-top: 40px;
+            border: 2px solid #800;
             transition: all 0.3s;
         }
         
-        #continue-btn:hover {
-            background: #0a0;
+        #restart-btn:hover, #continue-btn:hover {
+            background: #800;
             transform: scale(1.05);
         }
         
@@ -279,12 +220,13 @@
             transform: translate(-50%, -50%);
             width: 20px;
             height: 20px;
+            pointer-events: none;
         }
         
         .crosshair:before, .crosshair:after {
             content: '';
             position: absolute;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
         }
         
         .crosshair:before {
@@ -305,13 +247,67 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             color: white;
             border: 1px solid #555;
             padding: 10px 20px;
             cursor: pointer;
-            z-index: 40;
+            z-index: 50;
             border-radius: 5px;
+        }
+        
+        #flashlight-icon {
+            position: absolute;
+            top: 20px;
+            right: 150px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ff0;
+            border: 1px solid #660;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #stamina-bar {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 200px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #0af;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #stamina-fill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #0af, #0ff);
+            transition: width 0.3s;
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
     </style>
 </head>
@@ -320,41 +316,63 @@
         <canvas id="gameCanvas"></canvas>
         
         <div id="ui">
-            <div id="health">HEALTH: 100</div>
-            <div id="keys">KEYS: 0/5</div>
-            <div id="sanctuary">SANCTUARY: 3</div>
+            <div id="hud">
+                <div id="health" class="hud-item">
+                    <div>HEALTH</div>
+                    <div class="hud-value">100</div>
+                </div>
+                <div id="keys" class="hud-item">
+                    <div>KEYS FOUND</div>
+                    <div class="hud-value">0/5</div>
+                </div>
+                <div id="sanctuary" class="hud-item">
+                    <div>SANCTUARY</div>
+                    <div class="hud-value">3</div>
+                </div>
+            </div>
+            
             <div id="warning">IT'S CLOSE!</div>
-            <div id="objective">Find 5 keys to unlock the front door</div>
+            <div id="objective">Find 5 keys scattered in the house to unlock the front door</div>
             <div class="crosshair"></div>
-            <div id="stamina">
+            
+            <div id="flashlight-icon">
+                <span>🔦</span> FLASHLIGHT: ON
+            </div>
+            
+            <div id="stamina-bar">
                 <div id="stamina-fill"></div>
             </div>
-            <div id="stamina-text">STAMINA</div>
         </div>
         
         <div id="start-screen">
-            <h1 id="title">THE DARK HOUSE</h1>
-            <p id="subtitle">Your flashlight is the only thing between you and what's in the dark</p>
-            <button id="start-btn">ENTER THE DARKNESS</button>
+            <h1 id="title">THE FORSAKEN MANOR</h1>
+            <p id="subtitle">
+                You wake up in an abandoned manor deep in the Blackwood Forest.<br>
+                Your flashlight is fading, and something is hunting you in the dark.<br>
+                Find the keys and escape before it's too late.
+            </p>
+            <button id="start-btn">ENTER THE MANOR</button>
+            
             <div id="controls">
-                <p><span class="key">WASD</span> Move Around</p>
-                <p><span class="key">MOUSE</span> Look Around</p>
-                <p><span class="key">SHIFT</span> Run (uses stamina)</p>
-                <p><span class="key">F</span> Toggle Flashlight</p>
-                <p><span class="key">E</span> Pick Up Items / Open Door</p>
-                <p><span class="key">SPACE</span> Use Sanctuary (when being chased)</p>
+                <p><span class="key">WASD</span> Move | <span class="key">MOUSE</span> Look Around</p>
+                <p><span class="key">SHIFT</span> Run | <span class="key">F</span> Toggle Flashlight</p>
+                <p><span class="key">E</span> Interact / Pick Up | <span class="key">SPACE</span> Use Sanctuary</p>
+                <p><span class="key">ESC</span> Pause / Menu</p>
             </div>
         </div>
         
         <div id="game-over">
             <h1>YOU DIED</h1>
-            <p style="font-size: 24px; margin-bottom: 30px;">The darkness has consumed you...</p>
+            <p style="font-size: 24px; margin-bottom: 20px;">The darkness has consumed you...</p>
             <button id="restart-btn">TRY AGAIN</button>
         </div>
         
         <div id="win-screen">
             <h1>ESCAPED!</h1>
-            <p style="font-size: 24px; margin-bottom: 30px;">You found your way out of the darkness...</p>
+            <p style="font-size: 24px; margin-bottom: 20px; text-align: center; max-width: 600px;">
+                You managed to escape the forsaken manor,<br>
+                but the creature's screams still echo through the forest...
+            </p>
             <button id="continue-btn">PLAY AGAIN</button>
         </div>
         
@@ -372,11 +390,12 @@
         const restartBtn = document.getElementById('restart-btn');
         const continueBtn = document.getElementById('continue-btn');
         const soundToggle = document.getElementById('sound-toggle');
-        const healthEl = document.getElementById('health');
-        const keysEl = document.getElementById('keys');
-        const sanctuaryEl = document.getElementById('sanctuary');
         const warningEl = document.getElementById('warning');
         const objectiveEl = document.getElementById('objective');
+        const healthValue = document.querySelector('#health .hud-value');
+        const keysValue = document.querySelector('#keys .hud-value');
+        const sanctuaryValue = document.querySelector('#sanctuary .hud-value');
+        const flashlightIcon = document.getElementById('flashlight-icon');
         const staminaFill = document.getElementById('stamina-fill');
         
         // Set canvas size
@@ -391,12 +410,14 @@
             player: {
                 x: 400,
                 y: 300,
+                z: 50,
                 angle: 0,
+                tilt: 0,
                 health: 100,
                 keys: 0,
                 maxKeys: 5,
                 sanctuary: 3,
-                speed: 3,
+                speed: 2.5,
                 isRunning: false,
                 hasFlashlight: true,
                 flashlightOn: true,
@@ -404,39 +425,38 @@
                 maxStamina: 100
             },
             enemy: {
-                x: 1000,
+                x: 900,
                 y: 600,
-                speed: 1.8,
+                z: 50,
+                speed: 1.5,
                 chasing: false,
-                detectionRange: 250,
-                chaseRange: 500,
-                attackRange: 30,
+                detectionRange: 300,
+                chaseRange: 600,
+                attackRange: 40,
                 lastSeenTime: 0
             },
-            map: {
-                width: 1200,
-                height: 800,
+            house: {
+                rooms: [],
                 walls: [],
-                keys: [],
-                exit: {x: 600, y: 750, width: 100, height: 50}
+                floors: [],
+                ceilings: [],
+                doors: [],
+                windows: [],
+                furniture: []
             },
-            darkness: 0.85,
+            keys: [],
+            darkness: 0.8,
             lastTime: 0,
-            keys: {
-                w: false,
-                a: false,
-                s: false,
-                d: false,
-                shift: false
-            },
+            keysPressed: {},
             mouseSensitivity: 0.002,
-            soundEnabled: true
+            soundEnabled: true,
+            enemyDistance: 1000
         };
         
         // Initialize game
         function init() {
-            // Build the map
-            buildMap();
+            // Build the 3D house
+            buildHouse();
             
             // Set up event listeners
             startBtn.addEventListener('click', startGame);
@@ -444,35 +464,11 @@
             continueBtn.addEventListener('click', restartGame);
             soundToggle.addEventListener('click', toggleSound);
             
-            document.addEventListener('keydown', (e) => {
-                const key = e.key.toLowerCase();
-                if (key in game.keys) {
-                    game.keys[key] = true;
-                }
-                
-                // Additional key presses
-                if (game.started && !game.gameOver && !game.won) {
-                    if (key === 'f') {
-                        toggleFlashlight();
-                    }
-                    if (key === 'e') {
-                        interact();
-                    }
-                    if (key === ' ') {
-                        useSanctuary();
-                    }
-                }
-            });
-            
-            document.addEventListener('keyup', (e) => {
-                const key = e.key.toLowerCase();
-                if (key in game.keys) {
-                    game.keys[key] = false;
-                }
-            });
-            
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
             document.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('click', () => {
+            
+            document.addEventListener('click', () => {
                 if (game.started && !game.gameOver && !game.won) {
                     canvas.requestPointerLock();
                 }
@@ -482,43 +478,146 @@
             requestAnimationFrame(gameLoop);
         }
         
-        // Build the map
-        function buildMap() {
-            // Clear existing map
-            game.map.walls = [];
-            game.map.keys = [];
+        // Build the 3D house
+        function buildHouse() {
+            // Clear previous house
+            game.house = {
+                rooms: [],
+                walls: [],
+                floors: [],
+                ceilings: [],
+                doors: [],
+                windows: [],
+                furniture: []
+            };
             
-            // Outer walls
-            game.map.walls.push({x: 100, y: 100, width: 1000, height: 20}); // top
-            game.map.walls.push({x: 100, y: 680, width: 1000, height: 20}); // bottom
-            game.map.walls.push({x: 100, y: 100, width: 20, height: 600}); // left
-            game.map.walls.push({x: 1080, y: 100, width: 20, height: 600}); // right
+            // House layout
+            const houseLayout = {
+                // Main rooms with full 3D coordinates
+                rooms: [
+                    // Entry Hall (10x10 meters)
+                    {x: 0, y: 0, width: 1000, height: 1000, height3D: 400},
+                    // Living Room (12x8 meters)
+                    {x: 1000, y: 0, width: 1200, height: 800, height3D: 400},
+                    // Kitchen (8x8 meters)
+                    {x: 0, y: 1000, width: 800, height: 800, height3D: 400},
+                    // Study (8x6 meters)
+                    {x: 1000, y: 800, width: 800, height: 600, height3D: 400},
+                    // Hallway
+                    {x: 800, y: 0, width: 200, height: 1800, height3D: 400}
+                ]
+            };
             
-            // Interior walls (rooms)
-            game.map.walls.push({x: 100, y: 300, width: 300, height: 20}); // room divider 1
-            game.map.walls.push({x: 100, y: 500, width: 300, height: 20}); // room divider 2
-            game.map.walls.push({x: 400, y: 100, width: 20, height: 200}); // vertical divider
-            game.map.walls.push({x: 400, y: 400, width: 20, height: 300}); // vertical divider 2
-            game.map.walls.push({x: 600, y: 100, width: 20, height: 300}); // room divider 3
-            game.map.walls.push({x: 800, y: 400, width: 20, height: 300}); // room divider 4
+            // Build walls for each room
+            houseLayout.rooms.forEach(room => {
+                // Floor
+                game.house.floors.push({
+                    x: room.x, y: room.y, z: 0,
+                    width: room.width, height: room.height,
+                    color: '#8B4513' // Wood color
+                });
+                
+                // Ceiling
+                game.house.ceilings.push({
+                    x: room.x, y: room.y, z: room.height3D,
+                    width: room.width, height: room.height,
+                    color: '#696969' // Dark gray
+                });
+                
+                // Walls (4 walls per room)
+                // North wall
+                game.house.walls.push({
+                    x: room.x, y: room.y, z: 0,
+                    width: room.width, height: room.height3D,
+                    color: '#A0522D',
+                    type: 'north'
+                });
+                
+                // South wall
+                game.house.walls.push({
+                    x: room.x, y: room.y + room.height, z: 0,
+                    width: room.width, height: room.height3D,
+                    color: '#A0522D',
+                    type: 'south'
+                });
+                
+                // West wall
+                game.house.walls.push({
+                    x: room.x, y: room.y, z: 0,
+                    width: room.height3D, height: room.height,
+                    color: '#8B4513',
+                    type: 'west',
+                    rotated: true
+                });
+                
+                // East wall
+                game.house.walls.push({
+                    x: room.x + room.width, y: room.y, z: 0,
+                    width: room.height3D, height: room.height,
+                    color: '#8B4513',
+                    type: 'east',
+                    rotated: true
+                });
+            });
             
-            // Keys positions
-            game.map.keys = [
-                {x: 200, y: 200, collected: false},
-                {x: 350, y: 400, collected: false},
-                {x: 500, y: 250, collected: false},
-                {x: 700, y: 500, collected: false},
-                {x: 900, y: 200, collected: false}
+            // Add doors (openings in walls)
+            game.house.doors = [
+                // Front door (exit)
+                {x: 450, y: 0, z: 0, width: 100, height: 200, locked: true, type: 'exit'},
+                // Living room door
+                {x: 1000, y: 400, z: 0, width: 80, height: 180, locked: false},
+                // Kitchen door
+                {x: 400, y: 1000, z: 0, width: 80, height: 180, locked: false},
+                // Study door
+                {x: 1000, y: 1100, z: 0, width: 80, height: 180, locked: false}
             ];
             
-            // Reset player position
-            game.player.x = 200;
-            game.player.y = 200;
+            // Add windows
+            game.house.windows = [
+                {x: 200, y: 0, z: 100, width: 150, height: 150},
+                {x: 1200, y: 200, z: 100, width: 150, height: 150},
+                {x: 400, y: 1000, z: 100, width: 150, height: 150, type: 'kitchen'},
+                {x: 1300, y: 800, z: 100, width: 150, height: 150, type: 'study'}
+            ];
+            
+            // Add furniture
+            game.house.furniture = [
+                // Living room furniture
+                {x: 1100, y: 200, z: 0, width: 200, height: 400, depth: 100, type: 'sofa', color: '#8B0000'},
+                {x: 1400, y: 200, z: 0, width: 150, height: 150, depth: 80, type: 'table', color: '#654321'},
+                {x: 1300, y: 600, z: 0, width: 250, height: 100, depth: 250, type: 'cabinet', color: '#2F4F4F'},
+                
+                // Kitchen furniture
+                {x: 200, y: 1200, z: 0, width: 300, height: 80, depth: 80, type: 'counter', color: '#696969'},
+                {x: 600, y: 1200, z: 0, width: 150, height: 150, depth: 80, type: 'table', color: '#8B4513'},
+                
+                // Study furniture
+                {x: 1200, y: 900, z: 0, width: 200, height: 100, depth: 80, type: 'desk', color: '#654321'},
+                {x: 1400, y: 900, z: 0, width: 80, height: 200, depth: 50, type: 'bookshelf', color: '#2F4F4F'},
+                
+                // Hallway table
+                {x: 850, y: 800, z: 0, width: 100, height: 50, depth: 50, type: 'table', color: '#8B4513'}
+            ];
+            
+            // Place keys in the house
+            game.keys = [
+                {x: 1200, y: 300, z: 50, collected: false, room: 'living'},
+                {x: 300, y: 1200, z: 50, collected: false, room: 'kitchen'},
+                {x: 1250, y: 950, z: 50, collected: false, room: 'study'},
+                {x: 900, y: 400, z: 50, collected: false, room: 'hallway'},
+                {x: 1500, y: 100, z: 50, collected: false, room: 'living'}
+            ];
+            
+            // Set player starting position in entry hall
+            game.player.x = 500;
+            game.player.y = 500;
+            game.player.z = 50;
             game.player.angle = 0;
             
-            // Reset enemy position
-            game.enemy.x = 900;
-            game.enemy.y = 600;
+            // Set enemy starting position
+            game.enemy.x = 1400;
+            game.enemy.y = 1400;
+            game.enemy.z = 50;
             game.enemy.chasing = false;
             
             // Reset player stats
@@ -548,12 +647,13 @@
             gameOverScreen.style.display = 'none';
             winScreen.style.display = 'none';
             
-            // Rebuild map and reset positions
-            buildMap();
+            // Rebuild house and reset positions
+            buildHouse();
             
             // Start with flashlight on
             game.player.flashlightOn = true;
-            game.darkness = 0.85;
+            flashlightIcon.innerHTML = '<span>🔦</span> FLASHLIGHT: ON';
+            game.darkness = 0.8;
         }
         
         // Toggle sound
@@ -562,14 +662,48 @@
             soundToggle.textContent = game.soundEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF';
         }
         
+        // Handle keyboard input
+        function handleKeyDown(e) {
+            const key = e.key.toLowerCase();
+            game.keysPressed[key] = true;
+            
+            if (!game.started || game.gameOver || game.won) return;
+            
+            switch(key) {
+                case 'f':
+                    toggleFlashlight();
+                    break;
+                case 'e':
+                    interact();
+                    break;
+                case ' ':
+                    useSanctuary();
+                    break;
+                case 'escape':
+                    // Pause menu could be added here
+                    break;
+            }
+        }
+        
+        function handleKeyUp(e) {
+            const key = e.key.toLowerCase();
+            game.keysPressed[key] = false;
+        }
+        
         // Handle mouse movement
         function handleMouseMove(e) {
             if (!game.started || game.gameOver || game.won) return;
             
             const movementX = e.movementX || e.mozMovementX || 0;
-            game.player.angle += movementX * game.mouseSensitivity;
+            const movementY = e.movementY || e.mozMovementY || 0;
             
-            // Keep angle normalized
+            game.player.angle += movementX * game.mouseSensitivity;
+            game.player.tilt += movementY * game.mouseSensitivity * 0.5;
+            
+            // Clamp tilt
+            game.player.tilt = Math.max(-Math.PI/4, Math.min(Math.PI/4, game.player.tilt));
+            
+            // Normalize angle
             if (game.player.angle > Math.PI * 2) game.player.angle -= Math.PI * 2;
             if (game.player.angle < 0) game.player.angle += Math.PI * 2;
         }
@@ -578,7 +712,10 @@
         function toggleFlashlight() {
             if (game.player.hasFlashlight) {
                 game.player.flashlightOn = !game.player.flashlightOn;
-                game.darkness = game.player.flashlightOn ? 0.7 : 0.95;
+                flashlightIcon.innerHTML = game.player.flashlightOn ? 
+                    '<span>🔦</span> FLASHLIGHT: ON' : 
+                    '<span>🔦</span> FLASHLIGHT: OFF';
+                game.darkness = game.player.flashlightOn ? 0.6 : 0.95;
             }
         }
         
@@ -587,14 +724,14 @@
             if (game.player.sanctuary > 0 && game.enemy.chasing) {
                 game.player.sanctuary--;
                 game.enemy.chasing = false;
-                game.enemy.x = 900;
-                game.enemy.y = 600;
+                game.enemy.x = 1400;
+                game.enemy.y = 1400;
                 updateUI();
                 
                 // Visual effect
-                game.darkness = 0.5;
+                game.darkness = 0.3;
                 setTimeout(() => {
-                    game.darkness = game.player.flashlightOn ? 0.7 : 0.95;
+                    game.darkness = game.player.flashlightOn ? 0.6 : 0.95;
                 }, 1000);
             }
         }
@@ -602,22 +739,23 @@
         // Interact with objects
         function interact() {
             // Check for keys
-            for (const key of game.map.keys) {
+            for (const key of game.keys) {
                 if (!key.collected) {
                     const dx = key.x - game.player.x;
                     const dy = key.y - game.player.y;
                     const distance = Math.sqrt(dx*dx + dy*dy);
                     
-                    if (distance < 40) {
+                    if (distance < 60) {
                         key.collected = true;
                         game.player.keys++;
                         updateUI();
                         
                         if (game.player.keys === game.player.maxKeys) {
-                            objectiveEl.textContent = "Find the exit door and escape!";
+                            objectiveEl.textContent = "You have all keys! Find the front door to escape!";
                             objectiveEl.style.color = "#0f0";
+                            objectiveEl.classList.add('pulse');
                         } else {
-                            objectiveEl.textContent = `Keys found: ${game.player.keys}/${game.player.maxKeys}`;
+                            objectiveEl.textContent = `Keys found: ${game.player.keys}/${game.player.maxKeys} - Keep searching the house`;
                         }
                         return;
                     }
@@ -625,21 +763,23 @@
             }
             
             // Check for exit door
-            const exit = game.map.exit;
-            const dx = exit.x + exit.width/2 - game.player.x;
-            const dy = exit.y + exit.height/2 - game.player.y;
+            const exitDoor = game.house.doors.find(door => door.type === 'exit');
+            const dx = exitDoor.x - game.player.x;
+            const dy = exitDoor.y - game.player.y;
             const distance = Math.sqrt(dx*dx + dy*dy);
             
-            if (distance < 80) {
+            if (distance < 100) {
                 if (game.player.keys >= game.player.maxKeys) {
                     // Win the game
                     game.won = true;
                     winScreen.style.display = 'flex';
                 } else {
-                    objectiveEl.textContent = `Need ${game.player.maxKeys - game.player.keys} more key(s)`;
+                    objectiveEl.textContent = `The door is locked. Need ${game.player.maxKeys - game.player.keys} more key(s)`;
                     objectiveEl.style.color = "#f00";
+                    objectiveEl.classList.add('shake');
                     setTimeout(() => {
-                        objectiveEl.textContent = `Keys found: ${game.player.keys}/${game.player.maxKeys}`;
+                        objectiveEl.classList.remove('shake');
+                        objectiveEl.textContent = `Keys found: ${game.player.keys}/${game.player.maxKeys} - Keep searching the house`;
                         objectiveEl.style.color = "#0f0";
                     }, 2000);
                 }
@@ -652,19 +792,19 @@
             let moveX = 0;
             let moveY = 0;
             
-            if (game.keys.w) {
+            if (game.keysPressed['w']) {
                 moveX += Math.cos(game.player.angle);
                 moveY += Math.sin(game.player.angle);
             }
-            if (game.keys.s) {
+            if (game.keysPressed['s']) {
                 moveX -= Math.cos(game.player.angle);
                 moveY -= Math.sin(game.player.angle);
             }
-            if (game.keys.a) {
+            if (game.keysPressed['a']) {
                 moveX += Math.cos(game.player.angle - Math.PI/2);
                 moveY += Math.sin(game.player.angle - Math.PI/2);
             }
-            if (game.keys.d) {
+            if (game.keysPressed['d']) {
                 moveX += Math.cos(game.player.angle + Math.PI/2);
                 moveY += Math.sin(game.player.angle + Math.PI/2);
             }
@@ -680,51 +820,94 @@
             let speed = game.player.speed;
             game.player.isRunning = false;
             
-            if (game.keys.shift && game.player.stamina > 0) {
+            if (game.keysPressed['shift'] && game.player.stamina > 0) {
                 speed *= 1.8;
                 game.player.isRunning = true;
-                game.player.stamina = Math.max(0, game.player.stamina - 40 * deltaTime);
-            } else if (!game.keys.shift) {
-                game.player.stamina = Math.min(game.player.maxStamina, game.player.stamina + 20 * deltaTime);
+                game.player.stamina = Math.max(0, game.player.stamina - 50 * deltaTime);
+            } else if (!game.keysPressed['shift']) {
+                game.player.stamina = Math.min(game.player.maxStamina, game.player.stamina + 30 * deltaTime);
             }
             
-            // Update stamina UI
+            // Update stamina display
             staminaFill.style.width = (game.player.stamina / game.player.maxStamina * 100) + '%';
             
             // Calculate new position
             const newX = game.player.x + moveX * speed * deltaTime * 60;
             const newY = game.player.y + moveY * speed * deltaTime * 60;
             
-            // Check collision
+            // Check collision with walls and furniture
             if (!checkCollision(newX, game.player.y)) {
                 game.player.x = newX;
             }
             if (!checkCollision(game.player.x, newY)) {
                 game.player.y = newY;
             }
-            
-            // Keep player in bounds
-            game.player.x = Math.max(120, Math.min(game.map.width - 120, game.player.x));
-            game.player.y = Math.max(120, Math.min(game.map.height - 120, game.player.y));
         }
         
-        // Check collision with walls
+        // Check collision
         function checkCollision(x, y) {
-            const playerRadius = 20;
+            const playerRadius = 30;
             
-            for (const wall of game.map.walls) {
-                // Check if player circle collides with wall rectangle
-                const closestX = Math.max(wall.x, Math.min(x, wall.x + wall.width));
-                const closestY = Math.max(wall.y, Math.min(y, wall.y + wall.height));
+            // Check walls (excluding door openings)
+            for (const wall of game.house.walls) {
+                // Skip if there's a door in this wall section
+                let hasDoor = false;
+                for (const door of game.house.doors) {
+                    if (wall.type === 'south' && door.y === wall.y) {
+                        if (x > door.x - door.width/2 && x < door.x + door.width/2) {
+                            hasDoor = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasDoor) continue;
                 
-                const distanceX = x - closestX;
-                const distanceY = y - closestY;
-                const distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+                let wallLeft, wallRight, wallTop, wallBottom;
+                
+                if (wall.rotated) {
+                    wallLeft = wall.x;
+                    wallRight = wall.x + wall.width;
+                    wallTop = wall.y;
+                    wallBottom = wall.y + wall.height;
+                } else {
+                    wallLeft = wall.x;
+                    wallRight = wall.x + wall.width;
+                    wallTop = wall.y;
+                    wallBottom = wall.y + wall.height;
+                }
+                
+                // Circle-rectangle collision
+                const closestX = Math.max(wallLeft, Math.min(x, wallRight));
+                const closestY = Math.max(wallTop, Math.min(y, wallBottom));
+                const distance = Math.sqrt(
+                    Math.pow(x - closestX, 2) + 
+                    Math.pow(y - closestY, 2)
+                );
                 
                 if (distance < playerRadius) {
                     return true;
                 }
             }
+            
+            // Check furniture
+            for (const furniture of game.house.furniture) {
+                const left = furniture.x - furniture.width/2;
+                const right = furniture.x + furniture.width/2;
+                const top = furniture.y - furniture.height/2;
+                const bottom = furniture.y + furniture.height/2;
+                
+                const closestX = Math.max(left, Math.min(x, right));
+                const closestY = Math.max(top, Math.min(y, bottom));
+                const distance = Math.sqrt(
+                    Math.pow(x - closestX, 2) + 
+                    Math.pow(y - closestY, 2)
+                );
+                
+                if (distance < playerRadius + Math.min(furniture.width, furniture.height)/2) {
+                    return true;
+                }
+            }
+            
             return false;
         }
         
@@ -732,13 +915,13 @@
         function updateEnemy(deltaTime) {
             const dx = game.player.x - game.enemy.x;
             const dy = game.player.y - game.enemy.y;
-            const distance = Math.sqrt(dx*dx + dy*dy);
+            game.enemyDistance = Math.sqrt(dx*dx + dy*dy);
             
             // Update warning
-            if (distance < 150 && game.enemy.chasing) {
+            if (game.enemyDistance < 200 && game.enemy.chasing) {
                 warningEl.style.display = 'block';
-                const intensity = 1 - (distance / 150);
-                warningEl.style.fontSize = 36 + intensity * 24 + 'px';
+                const intensity = 1 - (game.enemyDistance / 200);
+                warningEl.style.fontSize = 32 + intensity * 24 + 'px';
                 warningEl.style.opacity = intensity;
             } else {
                 warningEl.style.display = 'none';
@@ -747,38 +930,29 @@
             // Enemy behavior
             if (!game.enemy.chasing) {
                 // Patrol mode
-                if (distance < game.enemy.detectionRange) {
+                if (game.enemyDistance < game.enemy.detectionRange) {
                     game.enemy.chasing = true;
                     game.enemy.lastSeenTime = Date.now();
-                } else {
-                    // Random patrol movement
-                    if (Math.random() < 0.01) {
-                        game.enemy.x += (Math.random() - 0.5) * 100;
-                        game.enemy.y += (Math.random() - 0.5) * 100;
-                    }
                 }
             } else {
                 // Chase mode
-                if (Date.now() - game.enemy.lastSeenTime > 10000) {
-                    // Give up chase after 10 seconds
+                if (Date.now() - game.enemy.lastSeenTime > 8000) {
                     game.enemy.chasing = false;
                 } else {
                     // Move towards player
                     const angle = Math.atan2(dy, dx);
-                    game.enemy.x += Math.cos(angle) * game.enemy.speed * deltaTime * 60;
-                    game.enemy.y += Math.sin(angle) * game.enemy.speed * deltaTime * 60;
+                    const enemySpeed = game.enemy.speed * deltaTime * 60;
                     
-                    // Keep enemy in bounds
-                    game.enemy.x = Math.max(120, Math.min(game.map.width - 120, game.enemy.x));
-                    game.enemy.y = Math.max(120, Math.min(game.map.height - 120, game.enemy.y));
+                    game.enemy.x += Math.cos(angle) * enemySpeed;
+                    game.enemy.y += Math.sin(angle) * enemySpeed;
                     
                     // Check attack
-                    if (distance < game.enemy.attackRange) {
+                    if (game.enemyDistance < game.enemy.attackRange) {
                         attackPlayer();
                     }
                     
                     // Update last seen time
-                    if (distance < game.enemy.chaseRange) {
+                    if (game.enemyDistance < game.enemy.chaseRange) {
                         game.enemy.lastSeenTime = Date.now();
                     }
                 }
@@ -787,14 +961,14 @@
         
         // Attack player
         function attackPlayer() {
-            game.player.health -= 25;
+            game.player.health -= 20;
             updateUI();
             
             // Visual feedback
-            canvas.style.backgroundColor = '#f00';
+            document.body.classList.add('shake');
             setTimeout(() => {
-                canvas.style.backgroundColor = '#000';
-            }, 100);
+                document.body.classList.remove('shake');
+            }, 500);
             
             // Check game over
             if (game.player.health <= 0) {
@@ -806,52 +980,56 @@
         
         // Update UI
         function updateUI() {
-            healthEl.textContent = `HEALTH: ${Math.max(0, game.player.health)}`;
-            keysEl.textContent = `KEYS: ${game.player.keys}/${game.player.maxKeys}`;
-            sanctuaryEl.textContent = `SANCTUARY: ${game.player.sanctuary}`;
+            healthValue.textContent = Math.max(0, game.player.health);
+            keysValue.textContent = `${game.player.keys}/${game.player.maxKeys}`;
+            sanctuaryValue.textContent = game.player.sanctuary;
             
             // Update health color
             if (game.player.health > 60) {
-                healthEl.style.color = '#0f0';
+                healthValue.style.color = '#0f0';
             } else if (game.player.health > 30) {
-                healthEl.style.color = '#ff0';
+                healthValue.style.color = '#ff0';
             } else {
-                healthEl.style.color = '#f00';
-                healthEl.classList.add('pulse');
+                healthValue.style.color = '#f00';
+                healthValue.classList.add('pulse');
             }
         }
         
-        // Draw the game
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#000';
+        // 3D rendering functions
+        function draw3D() {
+            // Clear canvas with dark blue-black gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#001122');
+            gradient.addColorStop(1, '#000811');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            if (!game.started) return;
-            
-            // Draw from player's perspective
+            // Calculate camera parameters
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
+            const fov = Math.PI / 3;
+            const scale = canvas.height / (2 * Math.tan(fov / 2));
             
-            // Draw floor (simple)
-            ctx.fillStyle = '#222';
-            ctx.fillRect(0, centerY, canvas.width, canvas.height - centerY);
+            // Draw floor
+            drawFloor(centerX, centerY, scale);
             
-            // Draw ceiling
-            ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, canvas.width, centerY);
+            // Draw ceilings
+            drawCeilings(centerX, centerY, scale);
             
-            // Draw walls (simplified 3D)
-            drawWalls();
+            // Draw walls
+            drawWalls3D(centerX, centerY, scale);
+            
+            // Draw furniture
+            drawFurniture3D(centerX, centerY, scale);
+            
+            // Draw doors and windows
+            drawDoorsWindows(centerX, centerY, scale);
             
             // Draw keys
-            drawKeys();
+            drawKeys3D(centerX, centerY, scale);
             
             // Draw enemy
-            drawEnemy();
-            
-            // Draw exit door
-            drawExit();
+            drawEnemy3D(centerX, centerY, scale);
             
             // Apply darkness overlay
             ctx.fillStyle = `rgba(0, 0, 0, ${game.darkness})`;
@@ -859,153 +1037,334 @@
             
             // Draw flashlight effect if on
             if (game.player.flashlightOn) {
-                const gradient = ctx.createRadialGradient(
-                    centerX, centerY, 100,
-                    centerX, centerY, 500
+                const flashlightGradient = ctx.createRadialGradient(
+                    centerX, centerY + game.player.tilt * 100, 100,
+                    centerX, centerY + game.player.tilt * 100, 600
                 );
-                gradient.addColorStop(0, 'rgba(255, 255, 200, 0.1)');
-                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                flashlightGradient.addColorStop(0, 'rgba(255, 255, 200, 0.15)');
+                flashlightGradient.addColorStop(0.5, 'rgba(255, 255, 180, 0.05)');
+                flashlightGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
                 
-                ctx.fillStyle = gradient;
+                ctx.fillStyle = flashlightGradient;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
         }
         
-        // Draw walls
-        function drawWalls() {
-            ctx.fillStyle = '#8B4513';
+        // Draw floor
+        function drawFloor(centerX, centerY, scale) {
+            ctx.fillStyle = '#2F4F4F'; // Dark slate gray
+            ctx.fillRect(0, centerY, canvas.width, canvas.height - centerY);
             
-            for (const wall of game.map.walls) {
+            // Add wood floor texture
+            ctx.strokeStyle = '#3D2B1F';
+            ctx.lineWidth = 2;
+            
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, centerY);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let i = centerY; i < canvas.height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+        }
+        
+        // Draw ceilings
+        function drawCeilings(centerX, centerY, scale) {
+            ctx.fillStyle = '#1A1A1A';
+            ctx.fillRect(0, 0, canvas.width, centerY);
+            
+            // Add ceiling texture (beams)
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 3;
+            
+            for (let i = 0; i < canvas.width; i += 120) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, centerY);
+                ctx.stroke();
+            }
+        }
+        
+        // Draw 3D walls
+        function drawWalls3D(centerX, centerY, scale) {
+            // Sort walls by distance for proper rendering
+            const walls = [...game.house.walls].sort((a, b) => {
+                const distA = Math.sqrt(
+                    Math.pow(a.x - game.player.x, 2) + 
+                    Math.pow(a.y - game.player.y, 2)
+                );
+                const distB = Math.sqrt(
+                    Math.pow(b.x - game.player.x, 2) + 
+                    Math.pow(b.y - game.player.y, 2)
+                );
+                return distB - distA; // Draw farthest first
+            });
+            
+            walls.forEach(wall => {
                 const dx = wall.x - game.player.x;
                 const dy = wall.y - game.player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance < 1000) { // Render distance limit
+                    const angle = Math.atan2(dy, dx) - game.player.angle;
+                    
+                    // Check if wall is in field of view
+                    if (Math.abs(angle) < Math.PI / 2) {
+                        // Project 3D coordinates to 2D screen
+                        const screenX = centerX + (angle * scale);
+                        
+                        // Calculate wall height on screen
+                        const wallHeight = (wall.height / distance) * scale;
+                        const wallWidth = (wall.width / distance) * scale;
+                        
+                        // Calculate screen position
+                        const screenY = centerY - wallHeight / 2 + game.player.tilt * 100;
+                        
+                        // Draw wall
+                        ctx.fillStyle = wall.color;
+                        ctx.fillRect(screenX - wallWidth/2, screenY, wallWidth, wallHeight);
+                        
+                        // Add wall texture
+                        ctx.strokeStyle = wall.color === '#A0522D' ? '#8B4513' : '#A0522D';
+                        ctx.lineWidth = 2;
+                        
+                        if (!wall.rotated) {
+                            // Horizontal wall texture (boards)
+                            for (let i = 0; i < wallHeight; i += 20) {
+                                ctx.beginPath();
+                                ctx.moveTo(screenX - wallWidth/2, screenY + i);
+                                ctx.lineTo(screenX + wallWidth/2, screenY + i);
+                                ctx.stroke();
+                            }
+                        } else {
+                            // Vertical wall texture
+                            for (let i = 0; i < wallWidth; i += 20) {
+                                ctx.beginPath();
+                                ctx.moveTo(screenX - wallWidth/2 + i, screenY);
+                                ctx.lineTo(screenX - wallWidth/2 + i, screenY + wallHeight);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Draw 3D furniture
+        function drawFurniture3D(centerX, centerY, scale) {
+            game.house.furniture.forEach(furniture => {
+                const dx = furniture.x - game.player.x;
+                const dy = furniture.y - game.player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance < 600) {
+                    const angle = Math.atan2(dy, dx) - game.player.angle;
+                    
+                    if (Math.abs(angle) < Math.PI / 2) {
+                        const screenX = centerX + (angle * scale);
+                        const height = (furniture.depth / distance) * scale;
+                        const width = (furniture.width / distance) * scale;
+                        const depth = (furniture.height / distance) * scale;
+                        
+                        const screenY = centerY - height / 2 + game.player.tilt * 100 + (50 / distance) * scale;
+                        
+                        // Draw furniture
+                        ctx.fillStyle = furniture.color;
+                        ctx.fillRect(screenX - width/2, screenY - depth/2, width, depth);
+                        
+                        // Add 3D effect
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(screenX - width/2, screenY - depth/2, width, depth);
+                        
+                        // Draw top of furniture
+                        ctx.fillStyle = furniture.type === 'table' ? '#8B4513' : 
+                                       furniture.type === 'cabinet' ? '#2F4F4F' : furniture.color;
+                        ctx.fillRect(screenX - width/2, screenY - depth/2 - height/4, width, height/4);
+                    }
+                }
+            });
+        }
+        
+        // Draw doors and windows
+        function drawDoorsWindows(centerX, centerY, scale) {
+            // Draw doors
+            game.house.doors.forEach(door => {
+                const dx = door.x - game.player.x;
+                const dy = door.y - game.player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance < 500) {
+                    const angle = Math.atan2(dy, dx) - game.player.angle;
+                    
+                    if (Math.abs(angle) < Math.PI / 2) {
+                        const screenX = centerX + (angle * scale);
+                        const height = (door.height / distance) * scale;
+                        const width = (door.width / distance) * scale;
+                        
+                        const screenY = centerY - height / 2 + game.player.tilt * 100;
+                        
+                        // Draw door
+                        ctx.fillStyle = door.type === 'exit' ? 
+                            (game.player.keys >= game.player.maxKeys ? '#0a0' : '#a00') : 
+                            '#654321';
+                        ctx.fillRect(screenX - width/2, screenY, width, height);
+                        
+                        // Add door details
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(screenX - width/2, screenY, width, height);
+                        
+                        // Draw doorknob
+                        ctx.fillStyle = '#ff0';
+                        ctx.beginPath();
+                        ctx.arc(screenX + width/4, screenY + height/2, width/8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            });
+            
+            // Draw windows
+            game.house.windows.forEach(window => {
+                const dx = window.x - game.player.x;
+                const dy = window.y - game.player.y;
                 const distance = Math.sqrt(dx*dx + dy*dy);
                 
                 if (distance < 400) {
                     const angle = Math.atan2(dy, dx) - game.player.angle;
                     
-                    // Only draw if in front of player
                     if (Math.abs(angle) < Math.PI / 2) {
-                        const screenX = centerX + (angle * 300);
-                        const height = Math.max(10, 3000 / distance);
-                        const width = Math.max(10, wall.width * 80 / distance);
+                        const screenX = centerX + (angle * scale);
+                        const size = (window.width / distance) * scale;
                         
-                        const y = canvas.height / 2 - height / 2;
+                        const screenY = centerY - size/2 + game.player.tilt * 100 + (100 / distance) * scale;
                         
-                        // Draw wall
-                        ctx.fillStyle = '#8B4513';
-                        ctx.fillRect(screenX - width/2, y, width, height);
+                        // Draw window
+                        ctx.fillStyle = 'rgba(135, 206, 235, 0.3)';
+                        ctx.fillRect(screenX - size/2, screenY, size, size);
                         
-                        // Add wood texture
-                        ctx.fillStyle = '#A0522D';
-                        for (let i = 0; i < 5; i++) {
-                            const lineY = y + i * (height / 5);
-                            ctx.fillRect(screenX - width/2, lineY, width, 2);
-                        }
+                        // Draw window frame
+                        ctx.strokeStyle = '#654321';
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(screenX - size/2, screenY, size, size);
+                        
+                        // Draw window cross
+                        ctx.beginPath();
+                        ctx.moveTo(screenX, screenY);
+                        ctx.lineTo(screenX, screenY + size);
+                        ctx.moveTo(screenX - size/2, screenY + size/2);
+                        ctx.lineTo(screenX + size/2, screenY + size/2);
+                        ctx.stroke();
                     }
                 }
-            }
+            });
         }
         
-        // Draw keys
-        function drawKeys() {
-            for (const key of game.map.keys) {
+        // Draw 3D keys
+        function drawKeys3D(centerX, centerY, scale) {
+            game.keys.forEach(key => {
                 if (!key.collected) {
                     const dx = key.x - game.player.x;
                     const dy = key.y - game.player.y;
                     const distance = Math.sqrt(dx*dx + dy*dy);
                     
-                    if (distance < 200) {
+                    if (distance < 300) {
                         const angle = Math.atan2(dy, dx) - game.player.angle;
                         
                         if (Math.abs(angle) < Math.PI / 2) {
-                            const screenX = centerX + (angle * 300);
-                            const size = Math.max(10, 100 / distance * 30);
+                            const screenX = centerX + (angle * scale);
+                            const size = Math.max(10, (30 / distance) * scale);
+                            
+                            const screenY = centerY - size/2 + game.player.tilt * 100 + (50 / distance) * scale;
                             
                             // Draw glowing key
-                            ctx.fillStyle = '#ff0';
+                            const gradient = ctx.createRadialGradient(
+                                screenX, screenY, size/2,
+                                screenX, screenY, size
+                            );
+                            gradient.addColorStop(0, '#ff0');
+                            gradient.addColorStop(0.7, '#ff0');
+                            gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+                            
+                            ctx.fillStyle = gradient;
                             ctx.beginPath();
-                            ctx.arc(screenX, centerY, size/2, 0, Math.PI * 2);
+                            ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
                             ctx.fill();
                             
-                            // Add glow
-                            ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                            // Draw key shape
+                            ctx.fillStyle = '#ff0';
+                            ctx.fillRect(screenX - size/4, screenY - size/8, size/2, size/4);
                             ctx.beginPath();
-                            ctx.arc(screenX, centerY, size, 0, Math.PI * 2);
+                            ctx.arc(screenX + size/4, screenY, size/8, 0, Math.PI * 2);
                             ctx.fill();
                         }
                     }
                 }
-            }
+            });
         }
         
-        // Draw enemy
-        function drawEnemy() {
+        // Draw 3D enemy
+        function drawEnemy3D(centerX, centerY, scale) {
             const dx = game.enemy.x - game.player.x;
             const dy = game.enemy.y - game.player.y;
-            const distance = Math.sqrt(dx*dx + dy*dy);
-            
-            if (distance < 300) {
-                const angle = Math.atan2(dy, dx) - game.player.angle;
-                
-                if (Math.abs(angle) < Math.PI / 2) {
-                    const screenX = centerX + (angle * 300);
-                    const size = Math.max(20, 150 / distance * 40);
-                    
-                    // Draw enemy shadow
-                    const gradient = ctx.createRadialGradient(
-                        screenX, centerY, size/2,
-                        screenX, centerY, size
-                    );
-                    gradient.addColorStop(0, 'rgba(150, 0, 0, 0.8)');
-                    gradient.addColorStop(1, 'rgba(50, 0, 0, 0)');
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(screenX, centerY, size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw enemy body
-                    ctx.fillStyle = game.enemy.chasing ? '#f00' : '#800';
-                    ctx.beginPath();
-                    ctx.arc(screenX, centerY, size/2, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw eyes when chasing
-                    if (game.enemy.chasing) {
-                        ctx.fillStyle = '#fff';
-                        ctx.beginPath();
-                        ctx.arc(screenX - size/4, centerY - size/8, size/8, 0, Math.PI * 2);
-                        ctx.arc(screenX + size/4, centerY - size/8, size/8, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
-            }
-        }
-        
-        // Draw exit door
-        function drawExit() {
-            const dx = game.map.exit.x - game.player.x;
-            const dy = game.map.exit.y - game.player.y;
             const distance = Math.sqrt(dx*dx + dy*dy);
             
             if (distance < 400) {
                 const angle = Math.atan2(dy, dx) - game.player.angle;
                 
                 if (Math.abs(angle) < Math.PI / 2) {
-                    const screenX = centerX + (angle * 300);
-                    const height = Math.max(20, 2000 / distance);
-                    const width = Math.max(10, game.map.exit.width * 60 / distance);
+                    const screenX = centerX + (angle * scale);
+                    const size = Math.max(20, (80 / distance) * scale);
                     
-                    const y = canvas.height / 2 - height / 2;
+                    const screenY = centerY - size/2 + game.player.tilt * 100 + (50 / distance) * scale;
                     
-                    // Draw door
-                    ctx.fillStyle = game.player.keys >= game.player.maxKeys ? '#0a0' : '#a00';
-                    ctx.fillRect(screenX - width/2, y, width, height);
+                    // Draw enemy shadow
+                    const shadowGradient = ctx.createRadialGradient(
+                        screenX, screenY, size/2,
+                        screenX, screenY, size * 1.5
+                    );
+                    shadowGradient.addColorStop(0, 'rgba(150, 0, 0, 0.8)');
+                    shadowGradient.addColorStop(1, 'rgba(50, 0, 0, 0)');
                     
-                    // Draw door frame
-                    ctx.strokeStyle = '#654321';
-                    ctx.lineWidth = 3;
-                    ctx.strokeRect(screenX - width/2, y, width, height);
+                    ctx.fillStyle = shadowGradient;
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, size * 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw enemy body
+                    const enemyGradient = ctx.createRadialGradient(
+                        screenX, screenY, size/4,
+                        screenX, screenY, size
+                    );
+                    enemyGradient.addColorStop(0, game.enemy.chasing ? '#f00' : '#800');
+                    enemyGradient.addColorStop(1, 'rgba(100, 0, 0, 0.5)');
+                    
+                    ctx.fillStyle = enemyGradient;
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw eyes when chasing
+                    if (game.enemy.chasing) {
+                        ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.arc(screenX - size/3, screenY - size/6, size/6, 0, Math.PI * 2);
+                        ctx.arc(screenX + size/3, screenY - size/6, size/6, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // Draw red pupils
+                        ctx.fillStyle = '#f00';
+                        ctx.beginPath();
+                        ctx.arc(screenX - size/3, screenY - size/6, size/10, 0, Math.PI * 2);
+                        ctx.arc(screenX + size/3, screenY - size/6, size/10, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
             }
         }
@@ -1022,8 +1381,8 @@
                 updateEnemy(deltaTime);
             }
             
-            // Draw everything
-            draw();
+            // Draw 3D scene
+            draw3D();
             
             // Continue loop
             requestAnimationFrame(gameLoop);
@@ -1033,13 +1392,7 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            centerX = canvas.width / 2;
-            centerY = canvas.height / 2;
         });
-        
-        // Global center variables for drawing
-        let centerX = canvas.width / 2;
-        let centerY = canvas.height / 2;
         
         // Initialize the game
         window.addEventListener('load', init);
