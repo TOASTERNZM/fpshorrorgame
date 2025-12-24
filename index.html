@@ -981,4 +981,125 @@
         }
 
         function drawFurniture() {
-            for (const furniture of gameState.house.furniture)
+            for (const furniture of gameState.house.furniture) {
+                const dx = furniture.x - gameState.player.x;
+                const dy = furniture.y - gameState.player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance < 200) {
+                    const angle = Math.atan2(dy, dx) - gameState.player.angle;
+                    if (Math.abs(angle) < Math.PI / 2) {
+                        const screenX = canvas.width / 2 + (angle * 200);
+                        const height = Math.max(10, 2000 / distance);
+                        const width = Math.max(10, furniture.width * 50 / distance);
+                        const y = canvas.height / 2 - height / 2;
+                        
+                        ctx.fillStyle = furniture.type === 'bed' ? '#8B0000' : '#696969';
+                        ctx.fillRect(screenX - width/2, y, width, height);
+                    }
+                }
+            }
+        }
+
+        function drawKeys() {
+            for (const key of gameState.keys) {
+                if (!key.collected) {
+                    const dx = key.x - gameState.player.x;
+                    const dy = key.y - gameState.player.y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (distance < 150) {
+                        const angle = Math.atan2(dy, dx) - gameState.player.angle;
+                        if (Math.abs(angle) < Math.PI / 2) {
+                            const screenX = canvas.width / 2 + (angle * 200);
+                            const size = Math.max(10, 50 / distance * 30);
+                            
+                            // Draw key
+                            ctx.fillStyle = '#ff0';
+                            ctx.beginPath();
+                            ctx.arc(screenX, canvas.height/2, size/2, 0, Math.PI * 2);
+                            ctx.fill();
+                            
+                            // Add glow
+                            ctx.fillStyle = 'rgba(255, 255, 0, 0.3)';
+                            ctx.beginPath();
+                            ctx.arc(screenX, canvas.height/2, size, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawEnemy() {
+            const dx = gameState.enemy.x - gameState.player.x;
+            const dy = gameState.enemy.y - gameState.player.y;
+            const distance = Math.sqrt(dx*dx + dy*dy);
+            
+            if (distance < 300) {
+                const angle = Math.atan2(dy, dx) - gameState.player.angle;
+                if (Math.abs(angle) < Math.PI / 2) {
+                    const screenX = canvas.width / 2 + (angle * 200);
+                    const size = Math.max(20, 100 / distance * 50);
+                    
+                    // Draw enemy as a shadowy figure
+                    const gradient = ctx.createRadialGradient(
+                        screenX, canvas.height/2, size/2,
+                        screenX, canvas.height/2, size
+                    );
+                    gradient.addColorStop(0, 'rgba(150, 0, 0, 0.8)');
+                    gradient.addColorStop(1, 'rgba(50, 0, 0, 0)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(screenX, canvas.height/2, size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw enemy body
+                    ctx.fillStyle = gameState.enemy.chasing ? '#f00' : '#800';
+                    ctx.beginPath();
+                    ctx.arc(screenX, canvas.height/2, size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Draw eyes when chasing
+                    if (gameState.enemy.chasing) {
+                        ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.arc(screenX - size/4, canvas.height/2 - size/8, size/8, 0, Math.PI * 2);
+                        ctx.arc(screenX + size/4, canvas.height/2 - size/8, size/8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+
+        // Main game loop
+        function gameLoop(timestamp) {
+            // Calculate delta time
+            if (!gameState.lastTime) gameState.lastTime = timestamp;
+            gameState.deltaTime = (timestamp - gameState.lastTime) / 1000;
+            gameState.lastTime = timestamp;
+            
+            // Update game state
+            if (gameState.started && !gameState.gameOver && !gameState.won) {
+                updateEnemy();
+            }
+            
+            // Draw everything
+            draw();
+            
+            // Continue loop
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Initialize the game
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
